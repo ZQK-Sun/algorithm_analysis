@@ -19,4 +19,8 @@ public class Teacher extends Person {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    static class gamePlayer{
+        private String gameName="Dota2";
+    }
 }

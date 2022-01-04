@@ -6,8 +6,8 @@ package personal_practice.chapter2;
  */
 public class FibonacciSequence {
     public static void main(String[] args) {
-        long startTime = System.currentTimeMillis();
-        int n = 10000;
+        int n = 30;
+        /*long startTime = System.currentTimeMillis();
        // long r1 = fib(n);
         long endTime1 = System.currentTimeMillis();
         //long r2 = fib2(n*10000);
@@ -20,7 +20,22 @@ public class FibonacciSequence {
         //System.out.println("递归用时:"+(endTime1 - startTime)+" 结果为:"+r1);
         System.out.println("for循环N放大10000倍用时:"+(endTime2 - endTime1)+" 结果为:"+fib2(n));
         System.out.println("fib3放大10000倍用时:"+(endTime3 - endTime2)+" 结果为:"+fib3(n));
-        System.out.println("fib4放大10000倍用时:"+(endTime4 - endTime3)+" 结果为:"+fib4(n));
+        System.out.println("fib4放大10000倍用时:"+(endTime4 - endTime3)+" 结果为:"+fib4(n));*/
+
+        long startTime = System.currentTimeMillis();
+        double r1 = eval(n);
+        long endTime1 = System.currentTimeMillis();
+        double r2 = eval2(n*1000);
+        long endTime2 = System.currentTimeMillis();
+        double r3 = eval3(n*100000);
+        long endTime3 = System.currentTimeMillis();
+        double r4 = eval4(n*100000);
+        long endTime4 = System.currentTimeMillis();
+        
+        System.out.println("递归用时:"+(endTime1 - startTime)+" 结果为:"+r1);//n=30时 约3000
+        System.out.println("eval2放大1000倍用时:"+(endTime2 - endTime1)+" 结果为:"+eval2(n));// 约500
+        System.out.println("eval3放大100000倍用时:"+(endTime3 - endTime2)+" 结果为:"+eval3(n));// 约40
+        System.out.println("eval4放大100000倍用时:"+(endTime4 - endTime3)+" 结果为:"+eval4(n));// 约30
     }
 
     /**
@@ -95,4 +110,69 @@ public class FibonacciSequence {
         return acc;
     }
 
+
+
+    /**
+     *
+     * 求解另外一类似问题： C(N) = 2/N *(C(1) + C(2) + C(3) + ... + C(N-1)) + N,   C(0)=1
+     * 这是一个动态规划的例子
+     * 先看指数级增长的低效递归
+     */
+    public static double eval(int n){
+        if(n==0){
+            return 1.0;
+        }else{
+            double sum = 0.0;
+            for(int i = 0; i < n; i++)
+                sum += eval(i);
+            return 2.0 * sum / n + n;
+        }
+    }
+
+    /**
+     *  改成非递归算法，把子问题的答案系统的记录在一个表内
+     *  复杂度O(N^2)
+     */
+    public static double eval2(int n){
+        double[] c = new double[n + 1];
+
+        c[0] = 1.0;
+        for (int i = 1; i <= n;i++){
+            double sum = 0.0;
+            for(int j = 0; j < i;j++)
+                sum +=c[j];
+            c[i] = 2.0 * sum / i + i;
+        }
+        return c[n];
+    }
+
+    /**
+     * 把前N-1 个c的值的和记录在一个表内
+     * 复杂度O(N)
+     */
+    public static double eval3(int n){
+        double[] cSum = new double[n + 1];
+        double c = 1.0;
+        for(int i = 1; i <= n ; i++){
+            cSum[i] = c + cSum[i-1];
+            c = 2.0 * cSum[i] / i + i;
+        }
+        return c;
+    }
+
+    /**
+     * 时间复杂度O(N)
+     * 去除数组，减少内存占用，用2个寄存器即可
+     * @param n
+     * @return
+     */
+    public static double eval4(int n){
+        double cSum = 0.0;
+        double c = 1.0;
+        for(int i = 1; i <= n ; i++){
+            cSum += c;
+            c = 2.0 * cSum / i + i;
+        }
+        return c;
+    }
 }
